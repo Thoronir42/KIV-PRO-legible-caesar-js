@@ -44,7 +44,7 @@ $(document).ready(function () {
 
             tEnd = performance.now();
             tTotal = Math.floor((tEnd - tStart) * 100) / 100;
-            console.log(proc.wordCount + " words encoded, each with " + codec.modulo + " variants, in " + tTotal +" ms.");
+            panel.alert(proc.wordCount + " words encoded, each with " + codec.modulo + " variants, in " + tTotal +" ms.", 'result', 'success');
         });
 
     });
@@ -59,12 +59,12 @@ $(document).ready(function () {
         tEnd = performance.now();
 
         if (typeof plainWords == "string") {
-            console.error(plainWords);
+            panel.alert(plainWords, 'err', 'danger');
         } else {
             panel.$fields.plainText.val(plainWords.join(' '));
 
             tTotal = Math.floor((tEnd - tStart) * 100) / 100;
-            console.log(ciphers.length + " words decoded in " + tTotal +" ms.");
+            panel.alert(ciphers.length + " words decoded in " + tTotal +" ms.", 'result', 'success');
         }
     });
 
@@ -102,6 +102,11 @@ $(document).ready(function () {
         return html + labels.join(', ');
     });
 
+    panel.$alerts.on('click', '.alert .close', function () {
+        var name = $(this).parent().data('name');
+        panel.unalert(name);
+    });
+
     $('[data-toggle="popover"]').popover();
 
     panel.setCodecs([
@@ -126,7 +131,7 @@ $(document).ready(function () {
             console.error("Codec supplier failerd with: " + errorMessage);
         });
         if (updatePanel === true) {
-            panel.selectCodec('default');
+            panel.selectCodec(name);
         }
     }
 

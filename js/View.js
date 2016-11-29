@@ -31,6 +31,10 @@
         $codecs: null,
         $codecInputs: null,
 
+        $alerts: null,
+        alerts: {},
+        alertTpl: "",
+
         $progressBar: null,
 
 
@@ -54,9 +58,13 @@
             this.$codecs = $root.find(".codecs-wrapper");
             this.codecTpl = this.$codecs.html();
 
+            this.$alerts = $root.find('.footer-alerts');
+            this.alertTpl = this.$alerts.html();
+
             this.$progressBar = $root.find('.progress-bar');
 
             this.showControls('general');
+            this.printAlerts();
         },
 
         setChoices: function (choices) {
@@ -101,14 +109,61 @@
             this.$codecs.html(html);
         },
         selectCodec: function (name) {
-            this.$root.find(('input[name=codec]')).filter("[value=" + name + "]").prop("checked", true);
+            var $codec = this.$root.find(('input[name=codec]'));
+            $codec.filter("[value=" + name + "]").prop("checked", true);
         },
         setProgress: function (pct, label) {
             pct = pct < 0 ? 0 : (pct > 100 ? 100 : pct);
             var strPct = pct + "%";
             this.$progressBar.css("width", strPct);
             this.$progressBar.text(label != undefined ? label : strPct);
+        },
+
+        alert: function (message, field, level) {
+            if (typeof message != "string") {
+                console.error("Wrong alert message argument: " + typeof message);
+                return;
+            }
+
+            if (field == undefined || field.length < 1) {
+                field = "alert" + this.alerts.length;
+            }
+            if(level == undefined){
+                level = 'info';
+            }
+
+            this.alerts[field] = this.alertTpl.replace('%level%', level).replace('%message%', message).replace('%name%', field);
+
+            this.printAlerts();
+        },
+        unalert: function (field) {
+            delete this.alerts[field];
+
+            this.printAlerts();
+        },
+        printAlerts: function () {
+            var count = 0;
+            var html = "";
+
+            for (var i in this.alerts) {
+                if (!this.alerts.hasOwnProperty(i)) {
+                    continue;
+                }
+
+                html += this.alerts[i];
+                count++;
+            }
+
+            if (count > 0) {
+                this.$alerts.html(html);
+                this.$alerts.show();
+            } else {
+                this.$alerts.hide();
+                this.$alerts.text('');
+            }
+
         }
+
 
     }
 })(window, document);
