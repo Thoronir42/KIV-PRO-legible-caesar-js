@@ -127,9 +127,9 @@
         }
         this.codec = codec;
 
-        this.pieces = input.length;
+        this.wordCount = input.length;
 
-        for (var i = 0; i < this.pieces; i++) {
+        for (var i = 0; i < this.wordCount; i++) {
             this.input[i] = this.output[i] = codec._normalize(input[i]);
             this.keys[i] = 0;
         }
@@ -141,7 +141,7 @@
     EncodeProcess.prototype = {
         codec: null,
 
-        pieces: 0,
+        wordCount: 0,
         input: [],
         keys: [],
         output: [],
@@ -160,7 +160,7 @@
             this.output[this.step] = this.choices[n];
             this.keys[this.step] = n;
 
-            if (this.step < this.pieces - 1) {
+            if (this.step < this.wordCount - 1) {
                 this.step++;
                 this._generateChoices();
                 return true;
@@ -169,7 +169,7 @@
             return false;
         },
         remainingWordCount: function() {
-            return this.pieces - this.step;
+            return this.wordCount - this.step;
         },
 
         getKeys: function () {

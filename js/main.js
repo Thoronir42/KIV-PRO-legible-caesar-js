@@ -19,27 +19,52 @@ $(document).ready(function () {
 
     panel.$buttons.encodeRandom.click(function () {
         var proc = new EncodeProcess(codec, panel.$fields.plainText.val());
-        var barrier = Math.floor(proc.pieces / 20);
-        barrier = barrier < 50 ? 50 : barrier;
+        var bulkSize = Math.floor(proc.wordCount / 20);
+        bulkSize = bulkSize < 50 ? 50 : bulkSize;
+
+        var timeDelay = 0;
+        var tStart, tEnd, tTotal;
+
 
         panel.showControls('progress');
-        panel.setProgress(0);
+        if(timeDelay > 0){
+            panel.setProgress(0);
+        } else {
+            panel.setProgress(100, "Encoding " + proc.wordCount +" words * " + codec.modulo + " variations");
+        }
 
-        randomEncode(proc, barrier, function () {
+        console.log("Bulk size is " + bulkSize + " words");
+
+        tStart = performance.now();
+
+        randomEncode(proc, bulkSize, timeDelay, function () {
             panel.setProgress(100);
             panel.showControls('general');
             updateFields(proc);
-        });
 
+            tEnd = performance.now();
+            tTotal = Math.floor((tEnd - tStart) * 100) / 100;
+            console.log(proc.wordCount + " words encoded, each with " + codec.modulo + " variants, in " + tTotal +" ms.");
+        });
 
     });
 
     panel.$buttons.decode.click(function () {
-        var plainWords = codec.decodeAll(panel.$fields.cipherText.val().split(' '), panel.$fields.keys.val().split(' '));
+        var keys = panel.$fields.keys.val().split(' ');
+        var ciphers = panel.$fields.cipherText.val().split(' ');
+        var tStart, tEnd, tTotal;
+
+        tStart = performance.now();
+        var plainWords = codec.decodeAll(ciphers, keys);
+        tEnd = performance.now();
+
         if (typeof plainWords == "string") {
             console.error(plainWords);
         } else {
             panel.$fields.plainText.val(plainWords.join(' '));
+
+            tTotal = Math.floor((tEnd - tStart) * 100) / 100;
+            console.log(ciphers.length + " words decoded in " + tTotal +" ms.");
         }
     });
 
@@ -105,8 +130,8 @@ $(document).ready(function () {
         }
     }
 
-    function randomEncode(process, barrier, onFinished) {
-        // console.log("Entering encode function on " + process.step + "/" + process.pieces + ". Barrier is " + barrier + ".");
+    function randomEncode(process, bulkSize, timeDelay, onFinished) {
+        console.log(process.step + " / " + process.wordCount);
         var keepGoing;
         while (process.remainingWordCount() > 0) {
             var n = Math.floor(Math.random() * codec.modulo);
@@ -117,19 +142,21 @@ $(document).ready(function () {
                 break;
             }
 
-            if (process.step % barrier == 0) {
+            if (process.step % bulkSize == 0) {
                 // console.log("Step reached barrier");
                 break;
             }
         }
 
-        var pct = Math.floor(process.step / process.pieces * 100);
-        panel.setProgress(pct, process.step + " / " + process.pieces);
+        if(timeDelay > 0){
+            var pct = Math.floor(process.step / process.wordCount * 100);
+            panel.setProgress(pct, process.step + " / " + process.wordCount);
+        }
 
         if (keepGoing) {
             setTimeout(function () {
-                randomEncode(process, barrier, onFinished);
-            }, SLEEP_TIME);
+                randomEncode(process, bulkSize, timeDelay, onFinished);
+            }, timeDelay);
         } else {
             onFinished();
         }

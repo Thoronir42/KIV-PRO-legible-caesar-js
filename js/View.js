@@ -106,7 +106,6 @@
         setProgress: function (pct, label) {
             pct = pct < 0 ? 0 : (pct > 100 ? 100 : pct);
             var strPct = pct + "%";
-            console.log(strPct, label);
             this.$progressBar.css("width", strPct);
             this.$progressBar.text(label != undefined ? label : strPct);
         }
