@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>KLC</title>
+	<script src="vendor/jQuery/jquery-2.1.4.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+	<script src="js/CodesetSupplier.js"></script>
+	<script src="js/Codec.js"></script>
+	<script src="js/MyMath.js"></script>
+	<script src="js/View.js"></script>
+	<script src="js/main.js"></script>
+
+
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/awesome-bootstrap-checkbox.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+			</div>
+			<div class="modal-body">
+				<label for="codesets">Char sets</label>
+				<textarea name="codesets" id="codesets"></textarea>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="wrapper">
+	<div class="container">
+		<h1>Kiwi Legible Caesar</h1>
+		<div class="panel panel-primary" id="wrapper-panel">
+			<div class="panel-heading">
+				<span>Kiwi Legible Caesar</span>
+				<a data-toggle="modal" data-target="myModal" class="btn btn-xs btn-info pull-right">
+					<i class="glyphicon glyphicon-question-sign"></i>
+				</a>
+			</div>
+			<div class="panel-body">
+				<fieldset class="form-group text-center">
+					<label>Codec</label>
+					<a class="btn btn-xs btn-info codec-viewer" role="button" tabindex="0" data-toggle="popover" data-placement="bottom"
+					   data-html="true" data-trigger="hover" title="Current codec">
+						<i class="glyphicon glyphicon-eye-open"></i>
+					</a>
+					<br/>
+					<!-- Preset -->
+					<span class="codecs-wrapper">
+						<span class="radio radio-inline radio-info">
+							<input type="radio" id="codec-%value%" name="codec" value="%value%">
+							<label for="codec-%value%">%caption%</label>
+						</span>
+					</span>
+					<!-- Custom -->
+					<span class="radio radio-inline radio-info">
+						<input type="radio" id="codec-custom" name="codec" value="custom" disabled
+							   data-toggle="modal" data-target="#myModal">
+						<label for="codec-custom">Custom</label>
+					</span>
+				</fieldset>
+				<!-- Codec controls -->
+				<div class="row">
+					<div class="col-md-6">
+						<label for="plain-text" class="control-label">Plain text</label>
+						<textarea id="plain-text" name="plain-text" class="form-control"></textarea>
+						<label class="control-label">Available ciphers for current word</label>
+						<span class="text form-control field-ciphers"></span>
+					</div>
+					<div class="col-md-6">
+						<label for="cipher-text">Ciphertext</label>
+						<textarea id="cipher-text" name="cipher-text" class="form-control"></textarea>
+						<label for="keys">Keys</label>
+						<textarea id="keys" name="keys" class="form-control"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<div class="row text-center controls-general">
+					<div class="col-md-6">
+						<div class="btn-group">
+							<button class="btn btn-primary" name="general-encode">Encode</button>
+							<button class="btn btn-warning" name="general-encode-random">Random encode</button>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<button class="btn btn-info" name="general-decode">Decode</button>
+					</div>
+				</div>
+				<div class="text-center controls-encode">
+					<button class="btn btn-warning" name="reset"><i class="glyphicon glyphicon-pause"></i></button>
+					<div class="btn-group">
+						<button class="btn btn-info"><i class="glyphicon glyphicon-chevron-left"></i></button>
+						<button class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i></button>
+						<button class="btn btn-info"><i class="glyphicon glyphicon-chevron-right"></i></button>
+					</div>
+				</div>
+				<div class="text-center controls-progress">
+					<div class="progress">
+						<div class="progress-bar" role="progressbar" style="width: 60%;">60%</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
