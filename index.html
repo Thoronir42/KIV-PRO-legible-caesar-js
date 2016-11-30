@@ -90,22 +90,30 @@
 			</div>
 			<div class="panel-footer">
 				<div class="row text-center controls-general">
-					<div class="col-md-6">
+					<div class="col-md-offset-2 col-md-2">
 						<div class="btn-group">
 							<button class="btn btn-primary" name="general-encode">Encode</button>
-							<button class="btn btn-warning" name="general-encode-random">Random encode</button>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-2">
 						<button class="btn btn-info" name="general-decode">Decode</button>
+					</div>
+					<div class="col-md-offset-2 col-md-2">
+						<button class="btn btn-warning" name="general-encode-random">Random encode</button>
+					</div>
+					<div class="col-md-2">
+						<span class="checkbox checkbox-primary">
+							<label for="delay-time">Show progress</label>
+							<input type="checkbox" id="delay-time" name="delay-time" title="Allow time delays for progress bar refreshing">
+						</span>
 					</div>
 				</div>
 				<div class="text-center controls-encode">
-					<button class="btn btn-warning" name="reset"><i class="glyphicon glyphicon-pause"></i></button>
+					<button class="btn btn-warning" name="reset"><i class="glyphicon glyphicon-refresh"></i></button>
 					<div class="btn-group">
-						<button class="btn btn-info"><i class="glyphicon glyphicon-chevron-left"></i></button>
-						<button class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i></button>
-						<button class="btn btn-info"><i class="glyphicon glyphicon-chevron-right"></i></button>
+						<button class="btn disabled btn-info"><i class="glyphicon glyphicon-chevron-left"></i></button>
+						<button class="btn disabled btn-primary"><i class="glyphicon glyphicon-ok"></i></button>
+						<button class="btn disabled btn-info"><i class="glyphicon glyphicon-chevron-right"></i></button>
 					</div>
 				</div>
 				<div class="text-center controls-progress">

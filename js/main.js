@@ -1,14 +1,15 @@
 $(document).ready(function () {
-    const SLEEP_TIME = 5;
+    const AVAILABLE_CODECS = [
+        {'caption': 'Full alphabet', value: 'default'},
+        {'caption': 'Original article', value: 'original'},
+        {'caption': 'Full minus X', value: 'nox'}
+    ];
 
     var csSupplier = new CodesetSupplier();
     var codec = new Codec();
 
     var panel = new View("#wrapper-panel");
     var process;
-
-    setCodecByName('default');
-
 
     panel.$buttons.encode.click(function () {
         process = new EncodeProcess(codec, panel.$fields.plainText.val());
@@ -17,12 +18,14 @@ $(document).ready(function () {
         panel.showControls('encode');
     });
 
+
     panel.$buttons.encodeRandom.click(function () {
         var proc = new EncodeProcess(codec, panel.$fields.plainText.val());
+        // bulkSize splits process into equal* parts to allow progress bar refreshing
         var bulkSize = Math.floor(proc.wordCount / 20);
         bulkSize = bulkSize < 50 ? 50 : bulkSize;
-
-        var timeDelay = 0;
+        // use time delay between bulks == allows progress bar to be refreshed
+        var timeDelay = panel.$root.find('input[name=delay-time]').prop('checked') ? 1 : 0;
         var tStart, tEnd, tTotal;
 
 
@@ -37,12 +40,14 @@ $(document).ready(function () {
 
         tStart = performance.now();
 
+        // start random encoding, closure is executed afetr whole input is encoded
         randomEncode(proc, bulkSize, timeDelay, function () {
+            tEnd = performance.now();
+
             panel.setProgress(100);
             panel.showControls('general');
-            updateFields(proc);
 
-            tEnd = performance.now();
+            updateFields(proc);
             tTotal = Math.floor((tEnd - tStart) * 100) / 100;
             panel.alert(proc.wordCount + " words encoded, each with " + codec.modulo + " variants, in " + tTotal +" ms.", 'result', 'success');
         });
@@ -68,6 +73,38 @@ $(document).ready(function () {
         }
     });
 
+    function randomEncode(process, bulkSize, timeDelay, onFinished) {
+        console.log(process.step + " / " + process.wordCount);
+        var continueEncryption;
+        while (process.remainingWordCount() > 0) {
+            var n = Math.floor(Math.random() * codec.modulo);
+            continueEncryption = process.select(n);
+
+            if (!continueEncryption) {
+                break;
+            }
+
+            // breaks the cycle to allow progress-related logic
+            if (process.step % bulkSize == 0) {
+                break;
+            }
+        }
+
+        if(timeDelay > 0){
+            var pct = Math.floor(process.step / process.wordCount * 100);
+            panel.setProgress(pct, process.step + " / " + process.wordCount);
+        }
+
+        if (continueEncryption) {
+            setTimeout(function () {
+                randomEncode(process, bulkSize, timeDelay, onFinished);
+            }, timeDelay);
+        } else {
+            onFinished();
+        }
+    }
+
+    // following functionality is only view-related
     panel.$buttons.reset.click(function () {
         panel.showControls('general');
     });
@@ -108,14 +145,10 @@ $(document).ready(function () {
     });
 
     $('[data-toggle="popover"]').popover();
+    panel.setCodecs(AVAILABLE_CODECS);
 
-    panel.setCodecs([
-        {'caption': 'Full alphabet', value: 'default'},
-        {'caption': 'Original article', value: 'original'},
-        {'caption': 'Full minus X', value: 'nox'}
-    ]);
+
     setCodecByName('nox', true);
-
 
     function updateFields(process) {
         panel.updateFields(process.getInput(), process.getOutput(), process.getKeys());
@@ -132,38 +165,6 @@ $(document).ready(function () {
         });
         if (updatePanel === true) {
             panel.selectCodec(name);
-        }
-    }
-
-    function randomEncode(process, bulkSize, timeDelay, onFinished) {
-        console.log(process.step + " / " + process.wordCount);
-        var keepGoing;
-        while (process.remainingWordCount() > 0) {
-            var n = Math.floor(Math.random() * codec.modulo);
-            keepGoing = process.select(n);
-
-            if (!keepGoing) {
-                // console.log("Select said stop");
-                break;
-            }
-
-            if (process.step % bulkSize == 0) {
-                // console.log("Step reached barrier");
-                break;
-            }
-        }
-
-        if(timeDelay > 0){
-            var pct = Math.floor(process.step / process.wordCount * 100);
-            panel.setProgress(pct, process.step + " / " + process.wordCount);
-        }
-
-        if (keepGoing) {
-            setTimeout(function () {
-                randomEncode(process, bulkSize, timeDelay, onFinished);
-            }, timeDelay);
-        } else {
-            onFinished();
         }
     }
 });

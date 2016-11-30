@@ -1,5 +1,9 @@
 (function (window, document) {
-
+    /**
+    *
+    * GCD and LCM functions found on
+    * http://stackoverflow.com/questions/4201860/how-to-find-gcd-lcm-on-a-set-of-numbers
+    */
     MyMath = function() {
     };
 

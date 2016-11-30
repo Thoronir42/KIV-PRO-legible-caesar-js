@@ -1,8 +1,9 @@
 (function (window, document) {
 
-    const CODEC_MODE_TO_UPPER = 1;
-    const CODEC_MIN_SET_LENGTH = 1;
-
+    /**
+     * Loads and provides codecs from /codecs/ folder.
+     * @constructor
+     */
     CodesetSupplier = function () {
     };
 

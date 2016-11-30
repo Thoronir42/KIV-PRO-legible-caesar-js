@@ -16,13 +16,17 @@
 
         },
 
+        /**
+         * Verifies provided codesets and sets them for furhrer encryption / decryption
+         * @param codesets
+         * @returns {*}
+         */
         setCharsets: function (codesets) {
             var setLengths = [];
             var n = 0;
 
             if (codesets == undefined || codesets.constructor !== Array) {
-                console.log("Codec received invalid charSets argument");
-                return;
+                return "Codec received invalid charSets argument";
             }
 
             var charSetMap = {};
@@ -45,15 +49,32 @@
 
             this.charToCharset = charSetMap;
             this.modulo = MyMath.lcma(setLengths);
+
+            return true;
         },
-        _normalize: function (word) {
+        /**
+         * Unites Lower/Upper case
+         * @param text string to be normalised
+         * @returns {string} provided string in normal form
+         * @private
+         */
+        _normalize: function (text) {
             switch (this.mode) {
                 default:
                 case CODEC_MODE_TO_UPPER:
-                    return word.toUpperCase();
+                    return text.toUpperCase();
 
             }
         },
+        /**
+         * Verifies that letters in codeset are not set in charSetMap yet and maps them to n
+         *
+         * @param codeset new codeset to be inserted
+         * @param n codeset number to be in map
+         * @param charSetMap char to charset map
+         * @returns {*} true or error message
+         * @private
+         */
         _putCodeest: function (codeset, n, charSetMap) {
             for (var i in codeset) {
                 var char = codeset[i];
@@ -65,6 +86,11 @@
 
             return true;
         },
+        /**
+         * Encodes provided word into all possible ciphers with current codec
+         * @param word
+         * @returns {Array}
+         */
         getPossibleCiphers: function (word) {
             var ciphers = [];
             for (var i = 0; i < this.modulo; i++) {
@@ -74,6 +100,12 @@
             return ciphers;
         },
 
+        /**
+         * Decodes provided words using provided keys
+         * @param words ciphers
+         * @param keys
+         * @returns {*} array of plain text words or error message
+         */
         decodeAll: function (words, keys) {
             var plain = [];
             if (words.length != keys.length) {
@@ -86,10 +118,22 @@
             return plain;
         },
 
+        /**
+         * Encodes provided word using provided key
+         * @param word
+         * @param key
+         * @returns {*}
+         */
         encode: function (word, key) {
             return this._shiftWord(this._normalize(word), key);
         },
 
+        /**
+         * Decodec provided cipher using provided key
+         * @param cipher
+         * @param key
+         * @returns {*}
+         */
         decode: function (cipher, key) {
             return this._shiftWord(this._normalize(cipher, this.mode), this.modulo - key);
         },
@@ -121,6 +165,14 @@
 
     };
 
+    /**
+     * Encode process object structure to hold encoding information across functions. Initialisation also copies input
+     * words to output words and sets keys to 0s.
+     *
+     * @param codec codec to be used for encoding
+     * @param input input text to be encoded
+     * @constructor
+     */
     EncodeProcess = function (codec, input) {
         if (input.constructor != Array) {
             input = input.split(" ");
@@ -154,6 +206,11 @@
             this.choices = this.codec.getPossibleCiphers(this.input[this.step]);
         },
 
+        /**
+         * Selects n-th available cipher to encode current word
+         * @param n
+         * @returns {boolean} true if there are more words to be encoded
+         */
         select: function (n) {
             n %= this.codec.modulo;
 

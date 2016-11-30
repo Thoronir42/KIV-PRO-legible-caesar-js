@@ -17,5 +17,9 @@
 .progress .progress-bar {
     text-align: left;
     transition-duration: 0ms;
-    padding-left:10px;
-}​
+    padding-left: 10px;
+}
+
+.field-ciphers .label {
+    cursor: pointer;
+}
